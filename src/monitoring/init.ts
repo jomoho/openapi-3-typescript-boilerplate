@@ -1,10 +1,10 @@
 import { Express } from "express";
-import promClient = require("prom-client");
+import * as promClient from "prom-client";
 import { requestWatch, reset } from "./mw";
 const pkg = require("../../package.json");
 export function init(app: Express) {
   promClient.register.setDefaultLabels({
-    fes: pkg.name,
+    app: pkg.name,
     version: pkg.version
   });
   promClient.collectDefaultMetrics({ timeout: 30000 });

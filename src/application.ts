@@ -1,4 +1,3 @@
-
 // import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as express from "express";
@@ -23,7 +22,12 @@ initSwaggerMiddlware(app, resolve(__dirname), () => {
   // self.express.use(bodyParser.json());
   // self.express.use(bodyParser.urlencoded({ extended: false }));
   // Custom error handler that returns JSON
-  app.use(function (err, req: express.Request, res: express.Response, next) {
+  app.use(function(
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: any
+  ) {
     if (err) {
       const errStr = err.message || err.toString();
       const errMsg = { message: errStr, extra: err };
@@ -33,5 +37,4 @@ initSwaggerMiddlware(app, resolve(__dirname), () => {
       res.json(errMsg);
     }
   });
-
 });

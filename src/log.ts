@@ -4,15 +4,13 @@ import * as env from "./env";
 import { getRequestId } from "./lib/cls";
 import { IncomingHttpHeaders, OutgoingHttpHeaders } from "http";
 import * as express from "express";
-import * as P from "bluebird";
 import * as perfy from "perfy";
 
 export class TDebug {
-
   private debugger: debug.IDebugger;
 
   constructor(namespace: string) {
-      this.debugger = Debug(namespace);
+    this.debugger = Debug(namespace);
   }
 
   public log(formatter: string, ...args: any[]) {
@@ -48,12 +46,14 @@ export class TDebug {
   }
 
   private logger(level: Levels, formatter: string, ...args: any[]) {
-    const message = getRequestId() ? getRequestId() + " " + level + " " + formatter  : formatter;
+    const message = getRequestId()
+      ? getRequestId() + " " + level + " " + formatter
+      : formatter;
     this.debugger(message, ...args);
   }
 }
 
-const debug = new TDebug("fes:src:lib:log");
+const debug = new TDebug("app:src:lib:log");
 
 export enum Levels {
   Log = "LOG",
@@ -82,9 +82,13 @@ export interface ResponseLog {
   headers?: OutgoingHttpHeaders;
 }
 
-export async function inOutLogger(req: express.Request, res: express.Response, next: express.NextFunction): P <any> {
+export async function inOutLogger(
+  req: express.Request & { requestId: string },
+  res: express.Response,
+  next: express.NextFunction
+): Promise<any> {
   const reqLog = {
-    method : req.method,
+    method: req.method,
     originalUrl: req.originalUrl,
     requestId: req.requestId,
     headers: req.headers,
@@ -95,9 +99,9 @@ export async function inOutLogger(req: express.Request, res: express.Response, n
   const oldWrite = res.write;
   const oldEnd = res.end;
 
-  const chunks = [];
+  const chunks: any[] = [];
 
-  res.write = (...restArgs): boolean => {
+  res.write = (...restArgs: any[]): boolean => {
     if (restArgs[0] && chunks.length === 0) {
       chunks.push(new Buffer(restArgs[0]));
     }
@@ -105,7 +109,7 @@ export async function inOutLogger(req: express.Request, res: express.Response, n
     return true;
   };
 
-  res.end = (...restArgs) => {
+  res.end = (...restArgs: any[]) => {
     if (restArgs[0]) {
       chunks.push(new Buffer(restArgs[0]));
     }
@@ -139,13 +143,13 @@ export async function inOutLogger(req: express.Request, res: express.Response, n
   };
 
   const abortFn = () => {
-      cleanup();
-      debug.warn("Request aborted by the client");
+    cleanup();
+    debug.warn("Request aborted by the client");
   };
 
-  const errorFn = err => {
-      cleanup();
-      debug.error(`Request pipeline error: ${err}`);
+  const errorFn = (err: any) => {
+    cleanup();
+    debug.error(`Request pipeline error: ${err}`);
   };
 
   res.on("close", abortFn); // aborted pipeline
@@ -154,11 +158,11 @@ export async function inOutLogger(req: express.Request, res: express.Response, n
   next();
 }
 
-const logger = new (winston.Logger)({
+const logger = new winston.Logger({
   transports: [
-    new (winston.transports.Console)({
+    new winston.transports.Console({
       timestamp: true,
-      "level": env.get("LOG_LEVEL")
+      level: env.get("LOG_LEVEL")
     })
   ]
 });

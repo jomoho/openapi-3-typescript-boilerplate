@@ -2,12 +2,23 @@ openapi: 3.0.0
 info:
   title: Hello World API
   description: Hello world API.
-  version: '1.0'
+  version: "1.0"
 paths:
+  /:
+    get:
+      x-swagger-router-controller: hellocontroller
+      operationId: getWelcome
+      tags:
+        - /
+      description: >-
+        Returns OK.
+      responses:
+        "200":
+          description: Successful request.
   /hello:
     post:
-      x-swagger-router-controller: helloWorldRoute
-      operationId: helloWorldPost
+      x-swagger-router-controller: hellocontroller
+      operationId: getHelloWorld
       tags:
         - /hello
       description: >-
@@ -20,21 +31,21 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successful request.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Hello'
+                $ref: "#/components/schemas/Hello"
         default:
           description: Invalid request.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     get:
-      x-swagger-router-controller: helloWorldRoute
-      operationId: helloWorldGet
+      x-swagger-router-controller: hellocontroller
+      operationId: getHelloWorld
       tags:
         - /hello
       description: >-
@@ -47,20 +58,20 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successful request.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Hello'
+                $ref: "#/components/schemas/Hello"
         default:
           description: Invalid request.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 servers:
-  - url: '/api'
+  - url: "/api"
 components:
   schemas:
     Hello:
